@@ -1,0 +1,623 @@
+			;; RESET
+000: 00      nop
+040: 7c 27   tml 027	; call 027	// wait a bit
+070: 30      ldi 0
+078: 23      lbli 3
+07c: 46      out	; P3 := 0
+07e: 20      lbli 0
+03f: 46      out	; P0 := 0
+05f: 55      in		; A := P0
+06f: 67      ska 3	; if A.3 = 0	// we are key
+077: f6      t 076	;	goto 076
+
+
+
+			;; LOCK START
+07b: 75      lbmi 1	; H := 1
+
+			; forever {
+07d: 21      lbli 1
+03e: 31      ldi 1
+01f: 70      ad
+04f: 43      xd		;	[1:1]++
+067: 55      in		;	A := P0
+073: 66      ska 2	;	if A.2 = 0
+079: de      t 05e	;		last
+03c: fd      t 07d	; }
+
+05e: 32      ldi 2
+02f: 21      lbli 1	; L := 1
+057: 46      out	; P1 := 2	// reset host and key
+06b: 00      nop
+075: 30      ldi 0
+03a: 46      out	; P1 := 0	// run key
+01d: 00      nop
+00e: 7c 27   tml 027	; call 027	// wait a bit
+043: 3c      ldi c	; A := c
+
+			; while A <> 0 {
+061: 01      adi 1	;	A++
+030: e1      t 061	; }
+058: 00      nop
+06c: ae      t 02e	; goto 270	// init stream
+
+
+
+			;; KEY START
+076: 31      ldi 1
+03b: 21      lbli 1
+05d: 46      out	; P1 := 1
+
+02e: 79 70   tl 270	; goto 270	// init stream
+
+
+
+			;; DIE
+04b: 20      lbli 0
+065: 55      in		; A := P0
+032: 67      ska 3
+019: d4      t 054	; if A.3 {	// we are lock
+00c: 75      lbmi 1
+046: 21      lbli 1
+023: 34      ldi 4
+051: 4a      s		;	[1:1] := 4
+028: c1      t 041	;	goto 041
+			; } else {	// we are key
+
+054: 33      ldi 3
+06a: 20      lbli 0
+035: 46      out	;	P0 := 3
+01a: 21      lbli 1
+00d: 31      ldi 1
+006: 46      out	;	P1 := 1
+003: cb      t 04b	;	goto 04b	// loop
+			; }
+
+
+
+			;;
+041: 33      ldi 3
+020: 20      lbli 0
+050: 46      out	; P0 := 3
+068: 75      lbmi 1
+074: 21      lbli 1
+07a: 30      ldi 0
+03d: 62      skm 2
+01e: 34      ldi 4	; A := ([1.1].2 ? 0 : 4)
+00f: 4a      s		; [1.1] = A
+047: 46      out	; P1 := A
+
+			;; WAIT ABOUT ONE SECOND
+063: 74      lbmi 0
+071: 2b      lbli b
+
+038: 30      ldi 0
+05c: 42      xi
+06e: b8      t 038
+037: 2e      lbli e
+05b: 38      ldi 8
+06d: 42      xi
+036: 3d      ldi d
+
+01b: 41      x
+04d: 2b      lbli b
+026: 48      sc
+
+013: 30      ldi 0
+049: 73      adcsk
+024: 9b      t 01b
+052: 42      xi
+029: 93      t 013
+014: c1      t 041	; goto 041	// loop
+
+
+
+			;; RUN HOST
+04a: 7d fa   tml 37a
+012: a1      t 021	; if lock
+009: 35      ldi 5	;	A := 5
+004: 21      lbli 1
+042: e4      t 064	; else
+
+021: 30      ldi 0	;	A := 0
+010: 21      lbli 1
+048: 46      out
+
+064: 00      nop
+072: 00      nop
+039: 00      nop
+01c: 46      out	; P1 := A
+04e: 4c      rit
+
+
+
+			;; WAIT A BIT
+			;; 626 cycles, about 0.6ms
+027: 30      ldi 0
+
+053: 5d      xax
+069: 30      ldi 0
+
+034: 01      adi 1
+05a: b4      t 034
+02d: 5d      xax
+016: 01      adi 1
+00b: d3      t 053
+045: 4c      rit
+
+
+
+;;{{{
+022: 00      nop
+011: 00      nop
+008: 00      nop
+044: 00      nop
+062: 00      nop
+031: 00      nop
+018: 00      nop
+04c: 00      nop
+066: 00      nop
+033: 00      nop
+059: 00      nop
+02c: 00      nop
+056: 00      nop
+02b: 00      nop
+055: 00      nop
+02a: 00      nop
+015: 00      nop
+00a: 00      nop
+005: 00      nop
+002: 78 80   tl 100
+
+07f: 80      t 000
+;;}}}
+
+
+
+			;; DIE
+100: 00      nop
+140: 30      ldi 0
+160: 21      lbli 1
+170: 46      out
+178: 80      t 100
+
+
+
+17c: fc      t 17c
+
+
+
+			;; MAIN LOOP
+17e: 31      ldi 1
+
+13f: 5c      lxa
+
+15f: 74      lbmi 0
+16f: 7d cb   tml 34b
+17b: 75      lbmi 1
+17d: 7d cb   tml 34b
+11f: 7c b1   tml 131
+167: 55      in
+173: 64      ska 0
+179: de      t 15e
+13c: d7      t 157
+
+15e: 65      ska 1
+12f: dd      t 15d
+
+
+
+			;;
+157: 78 4b   tl 04b
+
+
+
+			;;
+175: 60      skm 0
+13a: b0      t 130
+11d: 7c d9   tml 159
+107: 61      skm 1
+143: d7      t 157
+161: bd      t 13d
+
+130: 7c d9   tml 159
+16c: 61      skm 1
+176: fa      t 17a
+13b: d7      t 157
+
+15d: 30      ldi 0
+12e: 41      x
+117: 46      out
+14b: 00      nop
+165: 55      in
+132: 47      out0
+119: 4a      s
+10c: 23      lbli 3
+146: 55      in
+123: 20      lbli 0
+151: 64      ska 0
+128: f5      t 175
+154: 61      skm 1
+16a: c1      t 141
+135: 7c d9   tml 159
+10d: 60      skm 0
+106: d7      t 157
+103: bd      t 13d
+
+141: 7c d9   tml 159
+150: 60      skm 0
+168: fa      t 17a
+174: d7      t 157
+
+17a: 00      nop
+
+13d: 5d      xax
+11e: 01      adi 1
+10f: a1      t 121
+147: 7c 4a   tml 04a
+171: 7d f0   tml 370
+15c: 7d f0   tml 370
+137: 7d f0   tml 370
+16d: 27      lbli 7
+136: 40      l
+11b: 23      lbli 3
+14d: 41      x
+126: 5c      lxa
+113: 55      in
+149: 41      x
+124: 6c      sm 0
+152: 64      ska 0
+129: 68      rm 0
+114: 5d      xax
+14a: 41      x
+125: 46      out
+112: 5d      xax
+109: 10      skai 0
+104: bf      t 13f
+142: fe      t 17e
+
+121: 5d      xax
+110: df      t 15f
+
+
+
+			;; OUTPUT STREAM ID BIT
+148: 20      lbli 0
+164: 4a      s
+172: 30      ldi 0
+139: 41      x
+11c: 46      out
+14e: 00      nop
+127: 00      nop
+153: 47      out0
+169: 21      lbli 1
+134: 4c      rit
+
+
+
+			;; INPUT STREAM ID BIT
+15a: 20      lbli 0
+12d: 00      nop
+116: 00      nop
+10b: 00      nop
+145: 00      nop
+122: 00      nop
+111: 00      nop
+108: 55      in
+144: 21      lbli 1
+162: 4c      rit
+
+
+
+			;; H := "OTHER SIDE"
+131: 74      lbmi 0
+118: 7d fa   tml 37a
+166: 75      lbmi 1
+133: 4c      rit
+
+
+
+			;; H := "THIS SIDE"
+159: 75      lbmi 1
+12c: 7d fa   tml 37a
+12b: 74      lbmi 0
+155: 4c      rit
+
+
+
+;;{{{
+12a: 00      nop
+115: 00      nop
+10a: 00      nop
+105: 00      nop
+102: 80      t 100
+101: 80      t 100
+
+17f: 80      t 100
+;;}}}
+
+
+
+			;;
+200: 00      nop
+240: 78 80   tl 100
+
+
+
+			;; INIT STREAM
+270: 7d fa   tml 37a
+27c: e1      t 261
+27e: 75      lbmi 1
+23f: 21      lbli 1
+25f: 31      ldi 1
+26f: 63      skm 3
+277: 30      ldi 0
+27b: 7c c8   tml 148
+23e: 31      ldi 1
+21f: 60      skm 0
+24f: 30      ldi 0
+267: 7c c8   tml 148
+279: 31      ldi 1
+23c: 61      skm 1
+25e: 30      ldi 0
+22f: 7c c8   tml 148
+26b: 31      ldi 1
+275: 62      skm 2
+23a: 30      ldi 0
+21d: 7c c8   tml 148
+207: 00      nop
+243: 83      t 203
+
+261: 75      lbmi 1
+230: 21      lbli 1
+258: 3f      ldi f
+26c: 41      x
+276: 7c da   tml 15a
+25d: 65      ska 1
+22e: 6b      rm 3
+217: 00      nop
+24b: 7c da   tml 15a
+232: 65      ska 1
+219: 68      rm 0
+20c: 00      nop
+246: 7c da   tml 15a
+251: 65      ska 1
+228: 69      rm 1
+254: 00      nop
+26a: 7c da   tml 15a
+21a: 65      ska 1
+20d: 6a      rm 2
+206: 00      nop
+
+203: 74      lbmi 0
+241: 21      lbli 1
+220: 3b      ldi b
+250: 42      xi
+268: 31      ldi 1
+274: 42      xi
+27a: 34      ldi 4
+23d: 42      xi
+21e: 3f      ldi f
+20f: 42      xi
+247: 34      ldi 4
+263: 42      xi
+271: 36      ldi 6
+238: 3b      ldi b
+25c: 42      xi
+26e: 35      ldi 5
+237: 42      xi
+25b: 38      ldi 8
+26d: 37      ldi 7
+236: 42      xi
+21b: 3f      ldi f
+24d: 42      xi
+226: 3a      ldi a
+213: 3d      ldi d
+249: 42      xi
+224: 36      ldi 6
+252: 42      xi
+229: 3c      ldi c
+214: 31      ldi 1
+24a: 42      xi
+225: 3e      ldi e
+212: 42      xi
+209: 39      ldi 9
+204: 42      xi
+242: 38      ldi 8
+221: 41      x
+210: 75      lbmi 1
+248: 22      lbli 2
+264: 39      ldi 9
+272: 42      xi
+239: 3a      ldi a
+21c: 42      xi
+24e: 31      ldi 1
+227: 42      xi
+253: 38      ldi 8
+269: 42      xi
+234: 35      ldi 5
+25a: 42      xi
+22d: 37      ldi 7
+216: 3f      ldi f
+20b: 42      xi
+245: 31      ldi 1
+222: 42      xi
+211: 39      ldi 9
+208: 31      ldi 1
+244: 42      xi
+262: 3e      ldi e
+231: 42      xi
+218: 3b      ldi b
+24c: 31      ldi 1
+266: 42      xi
+233: 30      ldi 0
+259: 42      xi
+22c: 3d      ldi d
+256: 42      xi
+22b: 3e      ldi e
+255: 42      xi
+22a: 3c      ldi c
+215: 41      x
+20a: 78 fe   tl 17e
+
+
+
+
+202: 78 80   tl 100
+
+27f: 80      t 200
+
+
+
+300: 00      nop
+340: 78 80   tl 100
+
+
+
+			;; MANGLE BOTH
+370: 74      lbmi 0
+378: 7d bf   tml 33f
+37e: 75      lbmi 1
+
+
+
+			;; MANGLE ONE
+33f: 2f      lbli f
+35f: 40      l
+
+36f: 5c      lxa
+377: 48      sc
+37b: 21      lbli 1
+37d: 72      adc
+33e: 4a      s
+31f: 52      li
+34f: 72      adc
+367: 54      coma
+373: 42      xi
+379: 73      adcsk
+33c: 42      xi
+35e: 70      ad
+32f: 4a      s
+357: 52      li
+36b: 49      rc
+375: 72      adc
+33a: 42      xi
+31d: 08      adi 8
+30e: 72      adc
+307: 42      xi
+
+343: 01      adi 1
+361: 00      nop
+330: 72      adc
+358: 4a      s
+36c: 52      li
+376: c3      t 343
+33b: 5d      xax
+35d: 0f      adi f
+32e: 4c      rit
+317: ef      t 36f
+
+
+
+			;; [H:0] := NEXT STREAM BIT
+34b: 5d      xax
+365: 5c      lxa
+332: 57      xal
+319: 40      l
+30c: 20      lbli 0
+346: 4a      s
+323: 37      ldi 7
+351: 60      skm 0
+328: 30      ldi 0
+354: 4a      s		; [H:0] := [H:L].0 ? 7 : 0
+36a: 23      lbli 3
+335: 55      in		; A := P3
+31a: 20      lbli 0	; L := 0
+30d: 64      ska 0
+306: d0      t 350	; if P3.0.= 1
+303: 69      rm 1	;	[H:0] &= 5
+341: 00      nop
+320: 4c      rit	; else
+
+350: 68      rm 0
+368: 6a      rm 2	;	[H:0] &= 2
+374: 4c      rit
+
+
+
+			;; SKIP NEXT INSTRUCTION IF LOCK
+37a: 20      lbli 0
+33d: 55      in
+31e: 67      ska 3
+30f: f4      t 374
+347: 4d      ritsk
+
+
+
+;;{{{
+363: 00      nop
+371: 00      nop
+338: 00      nop
+35c: 00      nop
+36e: 00      nop
+337: 00      nop
+35b: 00      nop
+36d: 00      nop
+336: 00      nop
+31b: 00      nop
+34d: 00      nop
+326: 00      nop
+313: 00      nop
+349: 00      nop
+324: 00      nop
+352: 00      nop
+329: 00      nop
+314: 00      nop
+34a: 00      nop
+325: 00      nop
+312: 00      nop
+309: 00      nop
+304: 00      nop
+342: 00      nop
+321: 00      nop
+310: 00      nop
+348: 00      nop
+364: 00      nop
+372: 00      nop
+339: 00      nop
+31c: 00      nop
+34e: 00      nop
+327: 00      nop
+353: 00      nop
+369: 00      nop
+334: 00      nop
+35a: 00      nop
+32d: 00      nop
+316: 00      nop
+30b: 00      nop
+345: 00      nop
+322: 00      nop
+311: 00      nop
+308: 00      nop
+344: 00      nop
+362: 00      nop
+331: 00      nop
+318: 00      nop
+34c: 00      nop
+366: 00      nop
+333: 00      nop
+359: 00      nop
+32c: 00      nop
+356: 00      nop
+32b: 00      nop
+355: 00      nop
+32a: 00      nop
+315: 00      nop
+30a: 00      nop
+305: 00      nop
+302: 78 80   tl 100
+
+37f: 80      t 300
+;;}}}
+
+;; vi:fdm=marker:cms=;;%s:fdo=:

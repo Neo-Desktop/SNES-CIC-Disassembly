@@ -1,0 +1,599 @@
+;; NOTE: this chip has the opcodes for sc/rc and coma/nega swapped,
+;; compared to the other chips!
+
+
+
+			;; RESET
+000: 00      nop
+040: 30      ldi 0
+060: 20      lbli 0
+070: 46      out
+078: 55      in
+07c: 67      ska 3
+07e: 87      t 007
+03f: 75      lbmi 1
+
+05f: 55      in
+06f: 66      ska 2
+077: e7      t 067
+07b: 21      lbli 1
+07d: 31      ldi 1
+03e: 70      ad
+01f: 43      xd
+04f: df      t 05f
+
+067: 32      ldi 2
+073: 21      lbli 1
+079: 46      out
+03c: 00      nop
+05e: 30      ldi 0
+02f: 46      out
+057: 3d      ldi d
+
+06b: 01      adi 1
+075: eb      t 06b
+03a: 00      nop
+01d: 00      nop
+00e: b0      t 030
+
+007: 31      ldi 1
+043: 21      lbli 1
+061: 46      out
+
+030: 7d 00   tml 200
+
+06c: 31      ldi 1
+
+076: 5c      lxa
+
+03b: 74      lbmi 0
+05d: 7c c7   tml 147
+017: 75      lbmi 1
+04b: 7c c7   tml 147
+032: 7c f4   tml 174
+00c: 55      in
+046: 65      ska 1
+023: a8      t 028
+051: 92      t 012
+
+028: 30      ldi 0
+054: 41      x
+06a: 46      out
+035: 00      nop
+01a: 55      in
+00d: 47      out0
+006: 4a      s
+003: 75      lbmi 1
+041: 7c 83   tml 103
+050: 74      lbmi 0
+068: 60      skm 0
+074: e3      t 063
+07a: 7c f4   tml 174
+01e: 61      skm 1
+00f: 92      t 012
+047: db      t 05b
+
+063: 7c f4   tml 174
+038: 61      skm 1
+05c: b7      t 037
+06e: 92      t 012
+
+037: 00      nop
+
+05b: 5d      xax
+06d: 01      adi 1
+036: ca      t 04a
+01b: 7c 80   tml 100
+026: 7d de   tml 35e
+049: 27      lbli 7
+024: 40      l
+052: 10      skai 0
+029: f6      t 076
+014: ec      t 06c
+
+04a: 5d      xax
+025: bb      t 03b
+
+012: 7c 83   tml 103
+004: 90      t 010
+042: 30      ldi 0
+021: b9      t 039
+
+010: 21      lbli 1
+048: 30      ldi 0
+
+064: 00      nop
+072: e4      t 064
+
+039: 21      lbli 1
+01c: 46      out
+04e: 7c f3   tml 173
+053: 7c 80   tml 100
+034: 7c f3   tml 173
+02d: 92      t 012
+
+
+
+;;{{{
+016: 00      nop
+00b: 00      nop
+045: 00      nop
+022: 00      nop
+011: 00      nop
+008: 00      nop
+044: 00      nop
+062: 00      nop
+031: 00      nop
+018: 00      nop
+04c: 00      nop
+066: 00      nop
+033: 00      nop
+059: 00      nop
+02c: 00      nop
+056: 00      nop
+02b: 00      nop
+055: 00      nop
+02a: 00      nop
+015: 00      nop
+00a: 00      nop
+005: 00      nop
+002: 00      nop
+001: 00      nop
+
+07f: 80      t 000
+;;}}}
+
+
+
+			;; RUN HOST
+100: 7c 83   tml 103
+160: ef      t 16f
+170: 31      ldi 1
+178: 21      lbli 1
+17c: 00      nop
+17e: 00      nop
+13f: 00      nop
+15f: cf      t 14f
+
+16f: 30      ldi 0
+177: 21      lbli 1
+17b: 46      out
+17d: 00      nop
+13e: 00      nop
+11f: 00      nop
+
+14f: 46      out
+167: 4c      rit
+
+
+
+			;; WAIT A BIT
+			;; P13 = 0, P12 = 0: 0.6s
+			;; P13 = 0, P12 = 1: 0.4s
+			;; P13 = 1, P12 = 0: 0.8s
+			;; P13 = 1, P12 = 1: 1.0s
+173: 21      lbli 1
+179: 55      in		; A := P1
+13c: 66      ska 2
+15e: 8e      t 10e	; if A.2 {
+12f: 67      ska 3
+157: ba      t 13a	;	if A.3
+16b: 35      ldi 5	;		A := 5
+175: d8      t 158	;	else
+
+13a: 32      ldi 2	;		A := 2
+11d: d8      t 158
+			; } else {
+
+10e: 67      ska 3
+107: b0      t 130	;	if A.3
+143: 34      ldi 4	;		A := 4
+161: d8      t 158	;	else
+
+130: 33      ldi 3	;		A := 3
+			; }
+
+158: 4a      s		; [H:1] := A
+
+			;; WAIT 0.6 OR SO SECONDS
+16c: 74      lbmi 0	; H := 0
+176: 2b      lbli b	; L := 0
+
+13b: 30      ldi 0
+15d: 42      xi
+12e: bb      t 13b
+117: 2f      lbli f
+14b: 38      ldi 8
+
+165: 41      x
+132: 2c      lbli c
+119: 49      sc
+
+10c: 30      ldi 0
+146: 73      adcsk
+123: e5      t 165
+151: 42      xi
+128: 8c      t 10c
+
+			;;
+154: 21      lbli 1	; L := 1
+16a: 40      l		; H := [0:1]
+135: 0f      adi f
+11a: 4c      rit
+10d: 4a      s
+106: ec      t 16c
+
+
+
+			;; SKIP NEXT INSTRUCTION IF LOCK
+103: 20      lbli 0
+141: 55      in
+120: 67      ska 3
+150: 8f      t 10f
+168: 4d      ritsk
+
+
+
+			;; H := "OTHER SIDE"
+174: 74      lbmi 0
+17a: 7c 83   tml 103
+11e: 75      lbmi 1
+10f: 4c      rit
+
+
+
+			;; [H:0] := NEXT STREAM BIT
+147: 5d      xax
+163: 5c      lxa
+171: 57      xal
+138: 40      l		; A := [H:X]
+15c: 20      lbli 0	; L := 0
+16e: 4a      s
+137: 69      rm 1
+15b: 6a      rm 2
+16d: 6b      rm 3	; [H:0] := [H:X].0
+136: 4c      rit
+
+
+
+;;{{{
+11b: 00      nop
+14d: 00      nop
+126: 00      nop
+113: 00      nop
+149: 00      nop
+124: 00      nop
+152: 00      nop
+129: 00      nop
+114: 00      nop
+14a: 00      nop
+125: 00      nop
+112: 00      nop
+109: 00      nop
+104: 00      nop
+142: 00      nop
+121: 00      nop
+110: 00      nop
+148: 00      nop
+164: 00      nop
+172: 00      nop
+139: 00      nop
+11c: 00      nop
+14e: 00      nop
+127: 00      nop
+153: 00      nop
+169: 00      nop
+134: 00      nop
+15a: 00      nop
+12d: 00      nop
+116: 00      nop
+10b: 00      nop
+145: 00      nop
+122: 00      nop
+111: 00      nop
+108: 00      nop
+144: 00      nop
+162: 00      nop
+131: 00      nop
+118: 00      nop
+14c: 00      nop
+166: 00      nop
+133: 00      nop
+159: 00      nop
+12c: 00      nop
+156: 00      nop
+12b: 00      nop
+155: 00      nop
+12a: 00      nop
+115: 00      nop
+10a: 00      nop
+105: 00      nop
+102: 00      nop
+101: 00      nop
+
+17f: 80      t 100
+;;}}}
+
+
+
+			;; INIT STREAM
+200: 7c 83   tml 103
+260: 8e      t 20e
+270: 75      lbmi 1
+278: 21      lbli 1
+27c: 31      ldi 1
+27e: 63      skm 3
+23f: 30      ldi 0
+25f: 7d 80   tml 300
+277: 31      ldi 1
+27b: 60      skm 0
+27d: 30      ldi 0
+23e: 7d 80   tml 300
+24f: 31      ldi 1
+267: 61      skm 1
+273: 30      ldi 0
+279: 7d 80   tml 300
+25e: 31      ldi 1
+22f: 62      skm 2
+257: 30      ldi 0
+26b: 7d 80   tml 300
+23a: 00      nop
+21d: b5      t 235
+
+20e: 75      lbmi 1
+207: 21      lbli 1
+243: 3f      ldi f
+261: 41      x
+230: 7d f7   tml 377
+26c: 65      ska 1
+276: 6b      rm 3
+23b: 00      nop
+25d: 7d f7   tml 377
+217: 65      ska 1
+24b: 68      rm 0
+265: 00      nop
+232: 7d f7   tml 377
+20c: 65      ska 1
+246: 69      rm 1
+223: 00      nop
+251: 7d f7   tml 377
+254: 65      ska 1
+26a: 6a      rm 2
+
+235: 74      lbmi 0
+21a: 21      lbli 1
+20d: 3e      ldi e
+206: 3f      ldi f
+203: 42      xi
+241: 32      ldi 2
+220: 37      ldi 7
+250: 42      xi
+268: 33      ldi 3
+274: 3b      ldi b
+27a: 42      xi
+23d: 34      ldi 4
+21e: 3e      ldi e
+20f: 42      xi
+247: 3f      ldi f
+263: 42      xi
+271: 38      ldi 8
+238: 42      xi
+25c: 32      ldi 2
+26e: 42      xi
+237: 37      ldi 7
+25b: 42      xi
+26d: 3d      ldi d
+236: 42      xi
+21b: 37      ldi 7
+24d: 42      xi
+226: 38      ldi 8
+213: 42      xi
+249: 3e      ldi e
+224: 42      xi
+252: 3e      ldi e
+229: 42      xi
+214: 31      ldi 1
+24a: 42      xi
+225: 35      ldi 5
+212: 41      x
+209: 75      lbmi 1
+204: 22      lbli 2
+242: 35      ldi 5
+221: 37      ldi 7
+210: 42      xi
+248: 3e      ldi e
+264: 3b      ldi b
+272: 42      xi
+239: 35      ldi 5
+21c: 3d      ldi d
+24e: 42      xi
+227: 31      ldi 1
+253: 42      xi
+269: 32      ldi 2
+234: 42      xi
+25a: 31      ldi 1
+22d: 42      xi
+216: 37      ldi 7
+20b: 42      xi
+245: 3e      ldi e
+222: 42      xi
+211: 36      ldi 6
+208: 42      xi
+244: 37      ldi 7
+262: 42      xi
+231: 3a      ldi a
+218: 42      xi
+24c: 37      ldi 7
+266: 42      xi
+233: 31      ldi 1
+259: 42      xi
+22c: 35      ldi 5
+256: 41      x
+22b: 4c      rit
+
+
+
+;;{{{
+255: 00      nop
+22a: 00      nop
+215: 00      nop
+20a: 00      nop
+205: 00      nop
+202: 00      nop
+201: 00      nop
+
+27f: 80      t 200
+;;}}}
+
+
+
+			;; OUTPUT STREAM ID BIT
+300: 20      lbli 0
+340: 4a      s
+360: 30      ldi 0
+370: 41      x
+378: 46      out
+37c: 00      nop
+37e: 00      nop
+33f: 47      out0
+35f: 21      lbli 1
+36f: 4c      rit
+
+
+
+			;; INPUT STREAM ID BIT
+377: 20      lbli 0
+37b: 00      nop
+37d: 00      nop
+33e: 00      nop
+31f: 00      nop
+34f: 00      nop
+367: 55      in
+373: 00      nop
+379: 21      lbli 1
+33c: 4c      rit
+
+
+
+			;; MANGLE BOTH
+35e: 74      lbmi 0
+32f: 7d f5   tml 375
+36b: 75      lbmi 1
+
+
+
+			;; MANGLE ONE
+375: 2f      lbli f
+33a: 40      l
+
+31d: 5c      lxa
+30e: 49      sc
+307: 21      lbli 1
+343: 72      adc
+361: 4a      s
+330: 52      li
+358: 72      adc
+36c: 44      coma
+376: 42      xi
+33b: 73      adcsk
+35d: 42      xi
+32e: 70      ad
+317: 4a      s
+34b: 52      li
+365: 48      rc
+332: 72      adc
+319: 42      xi
+30c: 08      adi 8
+346: 72      adc
+323: 42      xi
+
+351: 01      adi 1
+328: 00      nop
+354: 72      adc
+36a: 4a      s
+335: 52      li
+31a: d1      t 351
+30d: 5d      xax
+306: 0f      adi f
+303: 4c      rit
+341: 9d      t 31d
+
+
+
+;;{{{
+320: 00      nop
+350: 00      nop
+368: 00      nop
+374: 00      nop
+37a: 00      nop
+33d: 00      nop
+31e: 00      nop
+30f: 00      nop
+347: 00      nop
+363: 00      nop
+371: 00      nop
+338: 00      nop
+35c: 00      nop
+36e: 00      nop
+337: 00      nop
+35b: 00      nop
+36d: 00      nop
+336: 00      nop
+31b: 00      nop
+34d: 00      nop
+326: 00      nop
+313: 00      nop
+349: 00      nop
+324: 00      nop
+352: 00      nop
+329: 00      nop
+314: 00      nop
+34a: 00      nop
+325: 00      nop
+312: 00      nop
+309: 00      nop
+304: 00      nop
+342: 00      nop
+321: 00      nop
+310: 00      nop
+348: 00      nop
+364: 00      nop
+372: 00      nop
+339: 00      nop
+31c: 00      nop
+34e: 00      nop
+327: 00      nop
+353: 00      nop
+369: 00      nop
+334: 00      nop
+35a: 00      nop
+32d: 00      nop
+316: 00      nop
+30b: 00      nop
+345: 00      nop
+322: 00      nop
+311: 00      nop
+308: 00      nop
+344: 00      nop
+362: 00      nop
+331: 00      nop
+318: 00      nop
+34c: 00      nop
+366: 00      nop
+333: 00      nop
+359: 00      nop
+32c: 00      nop
+356: 00      nop
+32b: 00      nop
+355: 00      nop
+32a: 00      nop
+315: 00      nop
+30a: 00      nop
+305: 00      nop
+302: 00      nop
+301: 00      nop
+
+37f: 80      t 300
+;;}}}
+
+;; vi:fdm=marker:cms=;;%s:fdo=:

@@ -1,0 +1,55 @@
+# SNES-CIC-Disassembly/disassembly
+
+### This folder contains annotated source by Segher
+
+#### Original `bitstreams` can be found in the [bitstreams](./bitstreams/) directory 
+
+| Source File | Annotated Disassembly |
+| ----------- | --------------------- |
+| [3195a.txt](3195a.txt) | [3195a-dis.txt](3195a-dis.txt) |
+| [d411.txt](d411.txt) | [d411-dis.txt](d411-dis.txt) |
+| [nescic.txt](nescic.txt) | [nescic-dis.txt](nescic-dis.txt) |
+
+
+### pinout.txt
+
+```
+                    NES CIC:
+              +------------------+
+ DATA_OUT <-- | 1 P0.0    +5V 16 |
+  DATA_IN --> | 2 P0.1   P3.2 15 | ?
+     SEED --> | 3 P0.2   P3.1 14 | ?
+LOCK/-KEY --> | 4 P0.3   P3.0 13 | ?
+              | 5 Xout   P1.3 12 | <-- RESET_SPEED_B
+              | 6 Xin    P1.2 11 | <-- RESET_SPEED_A
+              | 7 RESET  P1.1 10 | --> SLAVE_CIC_RESET
+              | 8 GND    P1.0  9 | --> -HOST_RESET
+              +------------------+
+
+
+                   SNES CIC:
+              +------------------+
+ DATA_OUT <-- | 1 P0.0    +5V 16 |
+  DATA_IN --> | 2 P0.1   P3.2 15 | ?
+     SEED --> | 3 P0.2   P3.1 14 | ?
+LOCK/-KEY --> | 4 P0.3   P3.0 13 | ?
+              | 5 Xout   P1.3 12 | ?
+              | 6 Xin    P1.2 11 | ?
+              | 7 RESET  P1.1 10 | --> SLAVE_CIC_RESET
+              | 8 GND    P1.0  9 | --> -HOST_RESET
+              +------------------+
+
+
+                   SNES PIF:
+              +------------------+
+ DATA_OUT <-- | 1 P0.0    +5V 18 |
+  DATA_IN --> | 2 P0.1   P3.2 17 | ?
+     SEED --> | 3 P0.2   P3.1 16 | ?
+LOCK/-KEY --> | 4 P0.3   P3.0 15 | <-- ?
+              | 5 N/C     N/C 14 |
+              | 6 Xout   P1.3 13 | ?
+              | 7 Xin    P1.2 12 | --> ?
+              | 8 RESET  P1.1 11 | --> SLAVE_CIC_RESET
+              | 9 GND    P1.0 10 | --> -PPU2_RESET
+              +------------------+
+```
